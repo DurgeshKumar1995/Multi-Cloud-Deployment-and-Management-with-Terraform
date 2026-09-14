@@ -1,0 +1,10 @@
+.git
+.github
+.terraform
+**/.terraform
+*.tfstate*
+*.tfvars
+tmp
+docs
+local
+

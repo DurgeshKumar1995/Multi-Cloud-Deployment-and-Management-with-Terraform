@@ -1,0 +1,11 @@
+#cloud-config
+package_update: true
+packages:
+  - docker.io
+  - curl
+runcmd:
+  - [systemctl, enable, --now, docker]
+  - [docker, pull, "${container_image}"]
+  - [docker, rm, -f, multicloud-demo]
+  - [docker, run, -d, --name, multicloud-demo, --restart, unless-stopped, -p, "${container_port}:${container_port}", -e, "PORT=${container_port}", -e, "CLOUD_PROVIDER=azure", -e, "CLOUD_REGION=${location}", "${container_image}"]
+

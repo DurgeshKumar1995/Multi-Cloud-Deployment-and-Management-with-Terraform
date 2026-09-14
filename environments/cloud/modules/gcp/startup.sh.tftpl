@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+apt-get update
+apt-get install -y docker.io
+systemctl enable --now docker
+docker pull ${container_image}
+docker rm -f multicloud-app 2>/dev/null || true
+docker run -d \
+  --name multicloud-app \
+  --restart unless-stopped \
+  -p ${container_port}:${container_port} \
+  -e CLOUD_PROVIDER=gcp \
+  -e CLOUD_REGION=${region} \
+  -e PORT=${container_port} \
+  ${container_image}

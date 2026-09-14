@@ -1,0 +1,2 @@
+"""Multi-cloud demo application."""
+

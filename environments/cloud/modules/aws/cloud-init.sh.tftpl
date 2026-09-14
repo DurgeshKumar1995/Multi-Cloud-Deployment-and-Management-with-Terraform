@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -y
+apt-get install -y docker.io curl
+systemctl enable --now docker
+
+docker pull '${container_image}'
+docker rm -f multicloud-demo 2>/dev/null || true
+docker run -d \
+  --name multicloud-demo \
+  --restart unless-stopped \
+  -p '${container_port}:${container_port}' \
+  -e PORT='${container_port}' \
+  -e CLOUD_PROVIDER='aws' \
+  -e CLOUD_REGION='${region}' \
+  '${container_image}'
+

@@ -1,0 +1,89 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ComputeNetworkAndLoadBalancing",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*",
+        "elasticloadbalancing:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ProjectStorage",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:GetBucket*",
+        "s3:ListBucket",
+        "s3:PutBucket*",
+        "s3:DeleteBucket*",
+        "s3:GetObject*",
+        "s3:PutObject*",
+        "s3:DeleteObject*",
+        "s3:ListBucketVersions"
+      ],
+      "Resource": [
+        "arn:aws:s3:::multicloud-*",
+        "arn:aws:s3:::multicloud-*/*"
+      ]
+    },
+    {
+      "Sid": "MonitoringNotificationsAndDatabase",
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:*",
+        "sns:*",
+        "rds:*",
+        "secretsmanager:CreateSecret",
+        "secretsmanager:DeleteSecret",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetRandomPassword",
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:ListSecretVersionIds",
+        "secretsmanager:PutResourcePolicy",
+        "secretsmanager:TagResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ProjectDns",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets",
+        "route53:GetHostedZone",
+        "route53:ListResourceRecordSets"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/Z03424422VGD13RVLRX4"
+    },
+    {
+      "Sid": "Route53HealthChecks",
+      "Effect": "Allow",
+      "Action": [
+        "route53:CreateHealthCheck",
+        "route53:DeleteHealthCheck",
+        "route53:GetHealthCheck",
+        "route53:GetHealthCheckStatus",
+        "route53:ListHealthChecks",
+        "route53:ChangeTagsForResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RequiredServiceLinkedRoles",
+      "Effect": "Allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "arn:aws:iam::*:role/aws-service-role/*",
+      "Condition": {
+        "StringLike": {
+          "iam:AWSServiceName": [
+            "elasticloadbalancing.amazonaws.com",
+            "rds.amazonaws.com"
+          ]
+        }
+      }
+    }
+  ]
+}

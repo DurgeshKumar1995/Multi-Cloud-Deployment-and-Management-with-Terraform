@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: multicloud-demo
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - app-aws:8080
+          - app-azure:8080
+          - app-gcp:8080
+

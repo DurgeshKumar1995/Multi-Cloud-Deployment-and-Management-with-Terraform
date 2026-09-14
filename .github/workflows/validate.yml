@@ -1,0 +1,29 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.16.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Test application
+        run: python -m unittest discover -s app/tests -v
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive
+      - name: Validate Docker Compose
+        run: docker compose -f local/docker-compose.yml config --quiet
+      - name: Build application image
+        run: docker build -t multicloud-demo:ci .
