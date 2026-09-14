@@ -71,7 +71,7 @@ make local-terraform
 5. Enable DNS only after at least two provider endpoints return HTTP 200 from `/health`.
 6. Enable databases only if the project demonstration truly requires them.
 
-See [architecture](docs/ARCHITECTURE.md), [failover testing](docs/FAILOVER_TEST.md), and [troubleshooting](docs/TROUBLESHOOTING.md).
+Follow the complete [run and verification guide](docs/RUN_AND_VERIFY.md). Also see [architecture](docs/ARCHITECTURE.md), [failover testing](docs/FAILOVER_TEST.md), and [troubleshooting](docs/TROUBLESHOOTING.md).
 
 ## Common commands
 

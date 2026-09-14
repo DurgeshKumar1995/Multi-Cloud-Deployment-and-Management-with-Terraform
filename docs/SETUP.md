@@ -45,7 +45,7 @@ Start with these **Terraform variables**:
 | `enable_gcp` | `false` | No |
 | `enable_dns` | `false` | No |
 | `enable_databases` | `false` | No |
-| `azure_ssh_public_key` | contents of `~/.ssh/id_ed25519.pub` | No |
+| `azure_ssh_public_key` | contents of `~/.ssh/id_rsa.pub` | No |
 | `alert_email` | your monitored email, or empty | No |
 
 Only if databases are enabled, add `database_admin_password` as a **sensitive Terraform variable**, at least 16 characters. Do not put it in a `.tfvars` file.
