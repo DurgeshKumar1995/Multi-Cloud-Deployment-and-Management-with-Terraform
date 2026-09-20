@@ -3,7 +3,14 @@ set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y docker.io curl awscli
+apt-get install -y docker.io curl unzip
+
+curl -fsSLo /tmp/awscliv2.zip \
+  'https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.34.63.zip'
+unzip -q /tmp/awscliv2.zip -d /tmp
+/tmp/aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli
+rm -rf /tmp/aws /tmp/awscliv2.zip
+
 systemctl enable --now docker
 
 docker pull '${container_image}'
