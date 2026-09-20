@@ -18,7 +18,7 @@ Every provider creates a versioned private object store for backups or artifacts
 
 ## DNS failover
 
-Route 53 creates one provider hostname per enabled cloud and a weighted record set for `app.multicloud.durgesh.space`. Each record is associated with an HTTP `/health` check. A single enabled cloud provides a stable public application hostname; with two or more, equal weights spread DNS responses and unhealthy endpoints are removed. DNS failover is not instantaneous because recursive resolvers cache results.
+Route 53 creates one provider hostname per enabled cloud and a weighted record set for `app.multicloud.example.com`. Each record is associated with an HTTP `/health` check. A single enabled cloud provides a stable public application hostname; with two or more, equal weights spread DNS responses and unhealthy endpoints are removed. DNS failover is not instantaneous because recursive resolvers cache results.
 
 ## Observability
 

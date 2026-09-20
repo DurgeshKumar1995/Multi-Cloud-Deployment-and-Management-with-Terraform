@@ -56,7 +56,7 @@
         "route53:GetHostedZone",
         "route53:ListResourceRecordSets"
       ],
-      "Resource": "arn:aws:route53:::hostedzone/Z03408713FBQPRLGXVTO6"
+      "Resource": "arn:aws:route53:::hostedzone/Z0123456789EXAMPLE"
     },
     {
       "Sid": "Route53HealthChecks",

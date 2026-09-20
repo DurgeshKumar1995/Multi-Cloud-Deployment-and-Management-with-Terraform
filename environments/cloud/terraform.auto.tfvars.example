@@ -1,7 +1,7 @@
 # Copy values into HCP Terraform workspace variables. Do not commit real secrets.
 environment          = "demo"
 name_prefix          = "multicloud"
-container_image      = "ghcr.io/durgeshkumar1995/multicloud-demo:v1.0.0"
+container_image      = "ghcr.io/YOUR_GITHUB_USERNAME/multicloud-demo:v1.0.0"
 container_port       = 8080
 health_check_path    = "/health"
 
@@ -10,14 +10,14 @@ aws_region           = "ap-south-1"
 aws_ami_id           = ""
 azure_location       = "centralindia"
 azure_resource_group_name = "rg-multicloud-terraform"
-gcp_project_id       = "multicloudproject-508411"
+gcp_project_id       = "your-gcp-project-id"
 gcp_region           = "asia-south1"
 gcp_zones            = ["asia-south1-a", "asia-south1-b"]
 
-domain_name          = "multicloud.durgesh.space"
+domain_name          = "multicloud.example.com"
 # Must be the public Route 53 zone whose name is exactly domain_name.
 hosted_zone_id       = "REPLACE_WITH_CHILD_HOSTED_ZONE_ID"
-application_hostname = "app.multicloud.durgesh.space"
+application_hostname = "app.multicloud.example.com"
 
 # Enable one provider at a time only after reviewing a saved plan.
 enable_aws       = false

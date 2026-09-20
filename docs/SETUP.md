@@ -4,9 +4,9 @@
 
 Use these workspace settings:
 
-- Organization: `Multi-Cloud-Deployment-and-Management`
-- Project: `Multi-Cloud Deployment-Management`
-- Workspace: `Multi-Cloud-Deployment_Management_Terraform`
+- Organization: `YOUR_HCP_ORGANIZATION`
+- Project: `YOUR_HCP_PROJECT`
+- Workspace: `YOUR_HCP_WORKSPACE`
 - Execution mode: Remote
 - Terraform working directory: `environments/cloud`
 - Auto apply: Off
@@ -20,17 +20,17 @@ Add these as **Environment variables** in the workspace. None contains a long-li
 | Key | Value |
 |---|---|
 | `TFC_AWS_PROVIDER_AUTH` | `true` |
-| `TFC_AWS_RUN_ROLE_ARN` | `arn:aws:iam::075472845204:role/hcp-terraform-multicloud` |
+| `TFC_AWS_RUN_ROLE_ARN` | `arn:aws:iam::123456789012:role/hcp-terraform-multicloud` |
 | `TFC_GCP_PROVIDER_AUTH` | `true` |
 | `TFC_GCP_PRINCIPAL_TYPE` | `service_account` |
-| `TFC_GCP_PROJECT_NUMBER` | `234367924778` |
-| `TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL` | `multicloud-services@multicloudproject-508411.iam.gserviceaccount.com` |
+| `TFC_GCP_PROJECT_NUMBER` | `123456789012` |
+| `TFC_GCP_RUN_SERVICE_ACCOUNT_EMAIL` | `terraform-deployer@your-gcp-project-id.iam.gserviceaccount.com` |
 | `TFC_GCP_WORKLOAD_POOL_ID` | `hcp-terraform-pool` |
 | `TFC_GCP_WORKLOAD_PROVIDER_ID` | `hcp-terraform-provider` |
 | `TFC_AZURE_PROVIDER_AUTH` | `true` |
-| `TFC_AZURE_RUN_CLIENT_ID` | `6d53e690-9d31-48e2-be4d-c9353f381da1` |
-| `ARM_TENANT_ID` | `e5019544-2300-441d-87d0-2f4661a91823` |
-| `ARM_SUBSCRIPTION_ID` | `0a56e4ba-0653-440c-8fe2-e293baa54c27` |
+| `TFC_AZURE_RUN_CLIENT_ID` | `00000000-0000-0000-0000-000000000001` |
+| `ARM_TENANT_ID` | `00000000-0000-0000-0000-000000000002` |
+| `ARM_SUBSCRIPTION_ID` | `00000000-0000-0000-0000-000000000003` |
 
 HashiCorp supports either the three separate GCP values shown above or one `TFC_GCP_WORKLOAD_PROVIDER_NAME` containing the full canonical provider name. Do not configure both forms; the unified full-name variable takes precedence. This project documents the separate-value form.
 
@@ -59,7 +59,7 @@ The role trust must allow both plan and apply runs for the exact organization, p
 The accepted subject prefix is:
 
 ```text
-organization:Multi-Cloud-Deployment-and-Management:project:Multi-Cloud Deployment-Management:workspace:Multi-Cloud-Deployment_Management_Terraform:run_phase:
+organization:YOUR_HCP_ORGANIZATION:project:YOUR_HCP_PROJECT:workspace:YOUR_HCP_WORKSPACE:run_phase:
 ```
 
 Attach [the deployment permissions policy](aws-deployment-policy.json) to the role. It is service-scoped but still broad enough for this demonstration; use a separate sandbox account and tighten resource ARNs after the first successful deployment.
@@ -69,7 +69,7 @@ Attach [the deployment permissions policy](aws-deployment-policy.json) to the ro
 The workload identity provider condition should restrict tokens to the workspace, for example:
 
 ```text
-assertion.sub.startsWith("organization:Multi-Cloud-Deployment-and-Management:project:Multi-Cloud Deployment-Management:workspace:Multi-Cloud-Deployment_Management_Terraform:")
+assertion.sub.startsWith("organization:YOUR_HCP_ORGANIZATION:project:YOUR_HCP_PROJECT:workspace:YOUR_HCP_WORKSPACE:")
 ```
 
 Grant `roles/iam.workloadIdentityUser` on the deployment service account to the restricted workload-pool principal set. Grant the deployment service account these project roles:
@@ -99,16 +99,16 @@ The enterprise application already needs Contributor on `rg-multicloud-terraform
 1. Set `enable_aws=true`; queue and review a plan, then apply.
 2. Verify the AWS output and `/health`.
 3. Set `enable_dns=true` to publish the AWS provider and application hostnames.
-4. Validate `http://app.multicloud.durgesh.space/health`.
+4. Validate `http://app.multicloud.example.com/health`.
 5. Deploy and verify Azure or GCP when DNS failover is required; applying again adds each enabled provider to the weighted record set.
 
-Create a **public Route 53 hosted zone named exactly `multicloud.durgesh.space`**. Do not reuse a hosted zone named `durgesh.space`: a delegated child zone must have its own SOA and NS records. Copy the child zone ID into the HCP Terraform variable `hosted_zone_id` and ensure the hosted-zone ARN in `docs/aws-deployment-policy.json` contains the same ID before attaching or updating the AWS deployment policy.
+Create a **public Route 53 hosted zone named exactly `multicloud.example.com`**. Do not reuse a hosted zone named `example.com`: a delegated child zone must have its own SOA and NS records. Copy the child zone ID into the HCP Terraform variable `hosted_zone_id` and ensure the hosted-zone ARN in `docs/aws-deployment-policy.json` contains the same ID before attaching or updating the AWS deployment policy.
 
-In Namecheap Advanced DNS, replace the four `multicloud` NS records with the four name servers assigned to this new child zone. Do not replace the parent `durgesh.space` nameservers unless the whole domain is intentionally moving to Route 53.
+In Namecheap Advanced DNS, replace the four `multicloud` NS records with the four name servers assigned to this new child zone. Do not replace the parent `example.com` nameservers unless the whole domain is intentionally moving to Route 53.
 
-Verify the zone before enabling Terraform DNS. The SOA owner returned by a Route 53 name server must be `multicloud.durgesh.space.`, not `durgesh.space.`:
+Verify the zone before enabling Terraform DNS. The SOA owner returned by a Route 53 name server must be `multicloud.example.com.`, not `example.com.`:
 
 ```bash
-dig +short NS multicloud.durgesh.space
-dig @ONE_OF_THE_NEW_ROUTE53_NAME_SERVERS multicloud.durgesh.space SOA +noall +answer
+dig +short NS multicloud.example.com
+dig @ONE_OF_THE_NEW_ROUTE53_NAME_SERVERS multicloud.example.com SOA +noall +answer
 ```

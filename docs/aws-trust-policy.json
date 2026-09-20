@@ -5,7 +5,7 @@
       "Sid": "HcpTerraformOidc",
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::075472845204:oidc-provider/app.terraform.io"
+        "Federated": "arn:aws:iam::123456789012:oidc-provider/app.terraform.io"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
@@ -13,7 +13,7 @@
           "app.terraform.io:aud": "aws.workload.identity"
         },
         "StringLike": {
-          "app.terraform.io:sub": "organization:Multi-Cloud-Deployment-and-Management:project:Multi-Cloud Deployment-Management:workspace:Multi-Cloud-Deployment_Management_Terraform:run_phase:*"
+          "app.terraform.io:sub": "organization:YOUR_HCP_ORGANIZATION:project:YOUR_HCP_PROJECT:workspace:YOUR_HCP_WORKSPACE:run_phase:*"
         }
       }
     }

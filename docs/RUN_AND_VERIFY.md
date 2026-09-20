@@ -19,7 +19,7 @@ Required:
 From Terminal:
 
 ```bash
-cd /Users/durgesh.kumar/Documents/terraform_2/multicloud-project
+cd /path/to/multicloud-project
 terraform version
 docker info
 git status
@@ -180,7 +180,7 @@ git push origin main
 Then run GitHub **Actions → Publish container image → Run workflow**. After it succeeds, make the `multicloud-demo` GHCR package public and verify it can be pulled anonymously:
 
 ```bash
-docker pull ghcr.io/durgeshkumar1995/multicloud-demo:v1.0.0
+docker pull ghcr.io/YOUR_GITHUB_USERNAME/multicloud-demo:v1.0.0
 ```
 
 In the HCP Terraform workspace, verify:
@@ -243,10 +243,10 @@ If the target stays unhealthy, verify that the configured AMI is Ubuntu-compatib
 
 ## 11. Deploy and verify Azure
 
-Before enabling Azure, add `azure_ssh_public_key` as a Terraform variable. A public key exists locally at `/Users/durgesh.kumar/.ssh/id_rsa.pub`; copy it with:
+Before enabling Azure, add `azure_ssh_public_key` as a Terraform variable. For example, copy an existing RSA public key with:
 
 ```bash
-pbcopy < /Users/durgesh.kumar/.ssh/id_rsa.pub
+pbcopy < ~/.ssh/id_rsa.pub
 ```
 
 Never copy the private file named `id_rsa`.
@@ -306,13 +306,13 @@ Keep `enable_databases=false`. Review the plan for Route 53 provider records, he
 Verify delegation and the application:
 
 ```bash
-dig +short NS multicloud.durgesh.space
-dig @ONE_OF_THE_ROUTE53_NAME_SERVERS multicloud.durgesh.space SOA +noall +answer
-dig +short app.multicloud.durgesh.space
-curl -fsS http://app.multicloud.durgesh.space/health
+dig +short NS multicloud.example.com
+dig @ONE_OF_THE_ROUTE53_NAME_SERVERS multicloud.example.com SOA +noall +answer
+dig +short app.multicloud.example.com
+curl -fsS http://app.multicloud.example.com/health
 ```
 
-The SOA answer must be owned by `multicloud.durgesh.space.`. An SOA answer owned by `durgesh.space.` means the Namecheap child delegation points at the wrong Route 53 hosted zone.
+The SOA answer must be owned by `multicloud.example.com.`. An SOA answer owned by `example.com.` means the Namecheap child delegation points at the wrong Route 53 hosted zone.
 
 Allow time for health-check evaluation and DNS caching. Repeated responses may identify different healthy clouds.
 
@@ -323,7 +323,7 @@ Use a demonstration environment only.
 1. Record the current provider endpoints and Route 53 health statuses.
 2. Stop both application instances in one provider using that provider's console. Do not delete them.
 3. Wait for Route 53 to mark the provider health check unhealthy and for the 60-second record TTL plus resolver caching.
-4. Repeatedly call `http://app.multicloud.durgesh.space/health`.
+4. Repeatedly call `http://app.multicloud.example.com/health`.
 5. Confirm responses come only from healthy providers.
 6. Restart the stopped instances and wait for their load-balancer targets and Route 53 health check to recover.
 

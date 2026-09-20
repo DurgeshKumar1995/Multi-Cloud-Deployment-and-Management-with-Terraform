@@ -13,7 +13,7 @@ Register the provider listed in the error under Subscription 1 > Resource provid
 
 ## Cloud VM is unhealthy
 
-Check cloud-init/startup-script logs, then confirm the image is public and the tag exists. The default is `ghcr.io/durgeshkumar1995/multicloud-demo:v1.0.0`. Confirm port `8080` and `/health` match the variables.
+Check cloud-init/startup-script logs, then confirm the image is public and the tag exists. The default is `ghcr.io/YOUR_GITHUB_USERNAME/multicloud-demo:v1.0.0`. Confirm port `8080` and `/health` match the variables.
 
 ## Namecheap hostname does not resolve
 

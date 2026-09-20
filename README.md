@@ -11,7 +11,7 @@ Never commit access keys, client secrets, service-account keys, or HCP Terraform
 ## Architecture
 
 ```text
-app.multicloud.durgesh.space (Route 53 weighted records + HTTP health checks)
+app.multicloud.example.com (Route 53 weighted records + HTTP health checks)
              |                    |                    |
           AWS ALB             Azure LB             GCP HTTP LB
              |                    |                    |

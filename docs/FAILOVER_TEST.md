@@ -24,7 +24,7 @@ docker compose -f local/docker-compose.yml start app-aws
 ## Cloud DNS demonstration
 
 1. Confirm each provider-specific `/health` URL returns HTTP 200.
-2. Query `app.multicloud.durgesh.space` repeatedly and record returned addresses.
+2. Query `app.multicloud.example.com` repeatedly and record returned addresses.
 3. Stop application instances in one provider without destroying its DNS record.
 4. Wait for three failed Route 53 health checks plus DNS cache expiry.
 5. Confirm new DNS answers and requests use healthy providers.

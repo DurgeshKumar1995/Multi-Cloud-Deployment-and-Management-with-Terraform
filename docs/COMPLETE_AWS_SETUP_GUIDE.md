@@ -2,7 +2,7 @@
 
 This guide builds and operates the working AWS portion of the multi-cloud project. It explains what to configure, where to configure it, and why each step exists.
 
-## 1. Result and current identifiers
+## 1. Result and example placeholders
 
 The deployed path is:
 
@@ -18,20 +18,20 @@ Route 53 -> AWS ALB -> two EC2 instances -> container port 8080
        S3, CloudWatch, and SNS
 ```
 
-Current non-secret identifiers:
+Replace every uppercase placeholder below with values from your own accounts. The values that look like IDs are deliberately non-working examples:
 
 | Item | Value |
 |---|---|
-| GitHub repository | `DurgeshKumar1995/Multi-Cloud-Deployment-and-Management-with-Terraform` |
-| HCP organization | `Multi-Cloud-Deployment-and-Management` |
-| HCP project | `Multi-Cloud Deployment-Management` |
-| HCP workspace | `Multi-Cloud-Deployment_Management_Terraform` |
-| AWS account | `075472845204` |
+| GitHub repository | `YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME` |
+| HCP organization | `YOUR_HCP_ORGANIZATION` |
+| HCP project | `YOUR_HCP_PROJECT` |
+| HCP workspace | `YOUR_HCP_WORKSPACE` |
+| AWS account | `123456789012` |
 | AWS region | `ap-south-1` |
 | AWS role | `hcp-terraform-multicloud` |
-| Route 53 child zone | `multicloud.durgesh.space` |
-| Route 53 hosted-zone ID | `Z03408713FBQPRLGXVTO6` |
-| Application hostname | `app.multicloud.durgesh.space` |
+| Route 53 child zone | `multicloud.example.com` |
+| Route 53 hosted-zone ID | `Z0123456789EXAMPLE` |
+| Application hostname | `app.multicloud.example.com` |
 
 Why: recording identifiers prevents configuring a similarly named role, workspace, or hosted zone by mistake.
 
@@ -55,7 +55,7 @@ Why: a leaked long-lived key continues working until it is explicitly revoked; a
 Install Git, Docker Desktop, Terraform 1.16.x, and optionally the AWS CLI. Then run:
 
 ```bash
-cd /Users/durgesh.kumar/Documents/terraform_2/multicloud-project
+cd /path/to/multicloud-project
 git --version
 docker version
 terraform version
@@ -69,16 +69,16 @@ Why: Git publishes code, Docker builds/tests the application, Terraform validate
 Create the GitHub repository, then connect and push this working tree:
 
 ```bash
-cd /Users/durgesh.kumar/Documents/terraform_2/multicloud-project
+cd /path/to/multicloud-project
 git remote -v
 git branch --show-current
 git push origin main
 ```
 
-The expected remote is:
+An example remote is:
 
 ```text
-https://github.com/DurgeshKumar1995/Multi-Cloud-Deployment-and-Management-with-Terraform.git
+https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME.git
 ```
 
 Why: HCP Terraform downloads the exact committed revision from GitHub. Uncommitted local changes are not included in a VCS-triggered run.
@@ -101,7 +101,7 @@ In GitHub, open **Actions -> Publish container image -> Run workflow**. The work
 After it succeeds, open the package settings and make `multicloud-demo` public. Verify anonymous access:
 
 ```bash
-docker pull ghcr.io/durgeshkumar1995/multicloud-demo:v1.0.0
+docker pull ghcr.io/YOUR_GITHUB_USERNAME/multicloud-demo:v1.0.0
 ```
 
 Why: EC2 cloud-init pulls this image without a GitHub login. A private package would leave the ALB targets unhealthy.
@@ -110,9 +110,9 @@ Why: EC2 cloud-init pulls this image without a GitHub login. A private package w
 
 In HCP Terraform:
 
-1. Create/select organization `Multi-Cloud-Deployment-and-Management`.
-2. Create/select project `Multi-Cloud Deployment-Management`.
-3. Create workspace `Multi-Cloud-Deployment_Management_Terraform`.
+1. Create/select organization `YOUR_HCP_ORGANIZATION`.
+2. Create/select project `YOUR_HCP_PROJECT`.
+3. Create workspace `YOUR_HCP_WORKSPACE`.
 4. Choose **Version control workflow** and connect the GitHub repository.
 5. Track branch `main`.
 6. Open **Settings -> General** and configure:
@@ -156,9 +156,9 @@ After creation, open **Trust relationships -> Edit trust policy** and use [`aws-
 The important restriction is:
 
 ```text
-organization:Multi-Cloud-Deployment-and-Management:
-project:Multi-Cloud Deployment-Management:
-workspace:Multi-Cloud-Deployment_Management_Terraform:
+organization:YOUR_HCP_ORGANIZATION:
+project:YOUR_HCP_PROJECT:
+workspace:YOUR_HCP_WORKSPACE:
 run_phase:*
 ```
 
@@ -199,7 +199,7 @@ Under **Workspace -> Variables -> Environment variables**, add:
 | Key | Value | Sensitive |
 |---|---|---|
 | `TFC_AWS_PROVIDER_AUTH` | `true` | No |
-| `TFC_AWS_RUN_ROLE_ARN` | `arn:aws:iam::075472845204:role/hcp-terraform-multicloud` | No |
+| `TFC_AWS_RUN_ROLE_ARN` | `arn:aws:iam::123456789012:role/hcp-terraform-multicloud` | No |
 
 Do not add static AWS keys.
 
@@ -210,41 +210,41 @@ Why: these variables tell the HCP dynamic credentials integration to exchange ea
 In **Route 53 -> Hosted zones -> Create hosted zone**:
 
 ```text
-Domain name: multicloud.durgesh.space
+Domain name: multicloud.example.com
 Type:        Public hosted zone
 ```
 
-Use the child zone ID `Z03408713FBQPRLGXVTO6` in Terraform. The four current child-zone nameservers are:
+Copy your generated child-zone ID into Terraform. `Z0123456789EXAMPLE` is a non-working example. Route 53 also assigns four nameservers; represent them as:
 
 ```text
-ns-54.awsdns-06.com.
-ns-1985.awsdns-56.co.uk.
-ns-1027.awsdns-00.org.
-ns-949.awsdns-54.net.
+NS_1_FROM_ROUTE53
+NS_2_FROM_ROUTE53
+NS_3_FROM_ROUTE53
+NS_4_FROM_ROUTE53
 ```
 
-In **Namecheap -> Domain List -> durgesh.space -> Manage -> Advanced DNS**, add exactly four records:
+In **Namecheap -> Domain List -> example.com -> Manage -> Advanced DNS**, add exactly four records:
 
 | Type | Host | Value | TTL |
 |---|---|---|---|
-| NS Record | `multicloud` | `ns-54.awsdns-06.com` | Automatic |
-| NS Record | `multicloud` | `ns-1985.awsdns-56.co.uk` | Automatic |
-| NS Record | `multicloud` | `ns-1027.awsdns-00.org` | Automatic |
-| NS Record | `multicloud` | `ns-949.awsdns-54.net` | Automatic |
+| NS Record | `multicloud` | `NS_1_FROM_ROUTE53` | Automatic |
+| NS Record | `multicloud` | `NS_2_FROM_ROUTE53` | Automatic |
+| NS Record | `multicloud` | `NS_3_FROM_ROUTE53` | Automatic |
+| NS Record | `multicloud` | `NS_4_FROM_ROUTE53` | Automatic |
 
-Remove every old `multicloud` NS record. Do not change the registrar nameservers for the parent `durgesh.space` domain.
+Remove every old `multicloud` NS record. Do not change the registrar nameservers for the parent `example.com` domain.
 
 Why: Namecheap remains authoritative for the parent domain and delegates only the `multicloud` subtree to the matching Route 53 child zone.
 
 Verify:
 
 ```bash
-dig @dns1.registrar-servers.com multicloud.durgesh.space NS +noall +authority
-dig @ns-54.awsdns-06.com multicloud.durgesh.space SOA +noall +answer
-dig @8.8.8.8 +short NS multicloud.durgesh.space
+dig @dns1.registrar-servers.com multicloud.example.com NS +noall +authority
+dig @NS_1_FROM_ROUTE53 multicloud.example.com SOA +noall +answer
+dig @8.8.8.8 +short NS multicloud.example.com
 ```
 
-The SOA owner must be `multicloud.durgesh.space.`, not `durgesh.space.`.
+The SOA owner must be `multicloud.example.com.`, not `example.com.`.
 
 ## 11. Configure HCP Terraform input variables
 
@@ -258,9 +258,9 @@ enable_gcp       = false
 enable_databases = false
 
 aws_region           = ap-south-1
-domain_name          = multicloud.durgesh.space
-application_hostname = app.multicloud.durgesh.space
-hosted_zone_id       = Z03408713FBQPRLGXVTO6
+domain_name          = multicloud.example.com
+application_hostname = app.multicloud.example.com
+hosted_zone_id       = Z0123456789EXAMPLE
 ```
 
 Why: feature toggles prevent accidental all-cloud/database deployment. `hosted_zone_id` ensures records are written into the delegated child zone.
@@ -300,16 +300,16 @@ Why: a Terraform plan is the final safety boundary before billable or destructiv
 Check HCP outputs:
 
 ```text
-aws_endpoint    = http://multicloud-demo-alb-118255151.ap-south-1.elb.amazonaws.com
-global_endpoint = http://app.multicloud.durgesh.space
+aws_endpoint    = http://YOUR_ALB_DNS_NAME
+global_endpoint = http://app.multicloud.example.com
 ```
 
 Verify the application:
 
 ```bash
-curl -fsS http://multicloud-demo-alb-118255151.ap-south-1.elb.amazonaws.com/health
-curl -fsS http://aws.multicloud.durgesh.space/health
-curl -fsS http://app.multicloud.durgesh.space/health
+curl -fsS http://YOUR_ALB_DNS_NAME/health
+curl -fsS http://aws.multicloud.example.com/health
+curl -fsS http://app.multicloud.example.com/health
 ```
 
 Expected response fields:
@@ -326,8 +326,8 @@ Expected response fields:
 Verify DNS:
 
 ```bash
-dig +short aws.multicloud.durgesh.space
-dig +short app.multicloud.durgesh.space
+dig +short aws.multicloud.example.com
+dig +short app.multicloud.example.com
 ```
 
 Run a final drift check:
