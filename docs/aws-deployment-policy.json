@@ -56,7 +56,7 @@
         "route53:GetHostedZone",
         "route53:ListResourceRecordSets"
       ],
-      "Resource": "arn:aws:route53:::hostedzone/Z03424422VGD13RVLRX4"
+      "Resource": "arn:aws:route53:::hostedzone/REPLACE_WITH_CHILD_HOSTED_ZONE_ID"
     },
     {
       "Sid": "Route53HealthChecks",

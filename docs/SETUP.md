@@ -103,4 +103,13 @@ The enterprise application already needs Contributor on `rg-multicloud-terraform
 5. Set `enable_dns=true` and apply.
 6. Validate `http://app.multicloud.durgesh.space/health`.
 
-The supplied Route 53 zone is `Z03424422VGD13RVLRX4` for `multicloud.durgesh.space`. In Namecheap, the `multicloud` delegation must point to the four Route 53 name servers. Do not replace the parent `durgesh.space` nameservers unless the whole domain is intentionally moving to Route 53.
+Create a **public Route 53 hosted zone named exactly `multicloud.durgesh.space`**. Do not reuse a hosted zone named `durgesh.space`: a delegated child zone must have its own SOA and NS records. Copy the new child zone ID into the HCP Terraform variable `hosted_zone_id`, replace `REPLACE_WITH_CHILD_HOSTED_ZONE_ID` in `docs/aws-deployment-policy.json`, and update the policy attached to the AWS deployment role.
+
+In Namecheap Advanced DNS, replace the four `multicloud` NS records with the four name servers assigned to this new child zone. Do not replace the parent `durgesh.space` nameservers unless the whole domain is intentionally moving to Route 53.
+
+Verify the zone before enabling Terraform DNS. The SOA owner returned by a Route 53 name server must be `multicloud.durgesh.space.`, not `durgesh.space.`:
+
+```bash
+dig +short NS multicloud.durgesh.space
+dig @ONE_OF_THE_NEW_ROUTE53_NAME_SERVERS multicloud.durgesh.space SOA +noall +answer
+```

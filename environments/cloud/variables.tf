@@ -161,9 +161,14 @@ variable "domain_name" {
 }
 
 variable "hosted_zone_id" {
-  description = "Route 53 public hosted zone ID."
+  description = "Route 53 public hosted zone ID whose zone name exactly matches domain_name."
   type        = string
-  default     = "Z03424422VGD13RVLRX4"
+  default     = ""
+
+  validation {
+    condition     = !var.enable_dns || can(regex("^Z[A-Z0-9]+$", var.hosted_zone_id))
+    error_message = "Set hosted_zone_id to the Route 53 public hosted zone for domain_name before enabling DNS."
+  }
 }
 
 variable "application_hostname" {

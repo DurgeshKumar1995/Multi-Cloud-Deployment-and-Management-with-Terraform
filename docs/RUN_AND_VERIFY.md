@@ -307,9 +307,12 @@ Verify delegation and the application:
 
 ```bash
 dig +short NS multicloud.durgesh.space
+dig @ONE_OF_THE_ROUTE53_NAME_SERVERS multicloud.durgesh.space SOA +noall +answer
 dig +short app.multicloud.durgesh.space
 curl -fsS http://app.multicloud.durgesh.space/health
 ```
+
+The SOA answer must be owned by `multicloud.durgesh.space.`. An SOA answer owned by `durgesh.space.` means the Namecheap child delegation points at the wrong Route 53 hosted zone.
 
 Allow time for health-check evaluation and DNS caching. Repeated responses may identify different healthy clouds.
 

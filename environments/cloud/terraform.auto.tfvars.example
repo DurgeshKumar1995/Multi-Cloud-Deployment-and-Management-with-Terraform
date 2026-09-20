@@ -15,7 +15,8 @@ gcp_region           = "asia-south1"
 gcp_zones            = ["asia-south1-a", "asia-south1-b"]
 
 domain_name          = "multicloud.durgesh.space"
-hosted_zone_id       = "Z03424422VGD13RVLRX4"
+# Must be the public Route 53 zone whose name is exactly domain_name.
+hosted_zone_id       = "REPLACE_WITH_CHILD_HOSTED_ZONE_ID"
 application_hostname = "app.multicloud.durgesh.space"
 
 # Enable one provider at a time only after reviewing a saved plan.
