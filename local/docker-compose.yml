@@ -7,7 +7,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: multicloud
       MONGO_INITDB_ROOT_PASSWORD: local-only-mongodb
     ports:
-      - "27017:27017"
+      - "${MONGODB_HOST_PORT:-27018}:27017"
     volumes:
       - mongodb-data:/data/db
     healthcheck:

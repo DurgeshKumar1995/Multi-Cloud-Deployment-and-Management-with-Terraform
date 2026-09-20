@@ -51,7 +51,7 @@ Local endpoints:
 | AWS-labelled app | `http://localhost:8081` |
 | Azure-labelled app | `http://localhost:8082` |
 | GCP-labelled app | `http://localhost:8083` |
-| Local MongoDB | `mongodb://localhost:27017` (authenticated; use through the app) |
+| Local MongoDB | `mongodb://localhost:27018` (authenticated; use through the app) |
 | Prometheus | `http://localhost:9090` |
 | Grafana | `http://localhost:3000` (`admin` / `local-only-change-me`) |
 | Floci AWS | `http://localhost:14566` (container port `4566`) |

@@ -7,7 +7,7 @@ Important: `enable_databases` in the Terraform configuration controls the existi
 ## What was added
 
 - Official PyMongo driver, pinned in `requirements.txt`.
-- Authenticated MongoDB 8.0 container for local testing.
+- Authenticated MongoDB 8.0 container for local testing (when the Docker VM kernel is supported).
 - Persistent Docker volume `mongodb-data`.
 - `MONGODB_URI`, `MONGODB_DATABASE`, and `MONGODB_COLLECTION` configuration.
 - `GET /db/health` for a MongoDB ping.
@@ -98,7 +98,7 @@ Open the cluster, select **Connect -> Drivers -> Python**, and copy the `mongodb
 The credential file must contain at least:
 
 ```text
-MONGODB_URI=mongodb+srv://DATABASE_USER:URL_ENCODED_PASSWORD@CLUSTER.mongodb.net/?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://DATABASE_USER:URL_ENCODED_PASSWORD@CLUSTER.mongodb.net/multicloud_demo?retryWrites=true&w=majority
 MONGODB_DATABASE=multicloud_demo
 ```
 
@@ -112,10 +112,12 @@ Use an absolute path to the downloaded credential file:
 docker compose \
   --env-file /absolute/path/to/atlas-credentials.env \
   -f local/docker-compose.yml \
-  up --build -d
+  up --build -d --no-deps app-aws app-azure app-gcp gateway
 ```
 
-Docker Compose substitutes `MONGODB_URI` into the application containers. The local MongoDB container may still run, but the applications use Atlas when `MONGODB_URI` is supplied.
+Docker Compose substitutes `MONGODB_URI` into the application containers. `--no-deps` deliberately skips the local MongoDB container because the applications use Atlas. This also avoids a known MongoDB startup incompatibility on Docker VMs using Linux kernel 6.19 through 7.0.13.
+
+The local MongoDB host port defaults to `27018` to avoid collisions with another MongoDB installation. Override it when required with `MONGODB_HOST_PORT`.
 
 ### 6. Verify Atlas through the application
 
