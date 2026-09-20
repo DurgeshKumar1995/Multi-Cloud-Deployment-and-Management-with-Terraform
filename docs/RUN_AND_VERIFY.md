@@ -348,7 +348,9 @@ terraform -chdir=environments/local destroy -auto-approve
 make local-down
 ```
 
-For real clouds, do not delete resources manually. In HCP Terraform use **Settings → Destruction and Deletion → Queue destroy plan**, review every proposed deletion, and confirm only when backups and evidence are safe.
+For AWS, use the feature-flag deletion workflow in [`AWS_TEARDOWN_GUIDE.md`](AWS_TEARDOWN_GUIDE.md). It removes only the selected AWS and DNS resources and separately handles the MongoDB secret and optional pre-existing hosted zone.
+
+For a workspace that contains resources from multiple clouds, avoid a workspace-wide destroy plan unless deletion of every provider is explicitly intended. Review every proposed deletion and confirm only when backups and evidence are safe.
 
 After destruction, check all three cloud consoles for retained disks, public IPs, load balancers, databases, snapshots, log storage, and Route 53 health checks that may continue to incur charges.
 

@@ -83,7 +83,7 @@ For Atlas setup and secure credential handling, follow the [MongoDB test guide](
 5. Enable DNS after at least one provider endpoint returns HTTP 200; two or more providers enable failover.
 6. Enable databases only if the project demonstration truly requires them.
 
-Follow the complete [run and verification guide](docs/RUN_AND_VERIFY.md). Also see [MongoDB setup](docs/MONGODB_SETUP.md), [architecture](docs/ARCHITECTURE.md), [failover testing](docs/FAILOVER_TEST.md), and [troubleshooting](docs/TROUBLESHOOTING.md).
+Follow the complete [run and verification guide](docs/RUN_AND_VERIFY.md). Also see [MongoDB setup](docs/MONGODB_SETUP.md), the detailed [AWS teardown guide](docs/AWS_TEARDOWN_GUIDE.md), [architecture](docs/ARCHITECTURE.md), [failover testing](docs/FAILOVER_TEST.md), and [troubleshooting](docs/TROUBLESHOOTING.md).
 
 ## Common commands
 

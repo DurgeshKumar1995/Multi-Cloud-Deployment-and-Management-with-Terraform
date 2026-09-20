@@ -383,14 +383,9 @@ Why: the local environment demonstrates the application, monitoring, failover pr
 
 ## 17. Disable or destroy AWS safely
 
-Because DNS depends on AWS, disable and apply in two stages:
-
-1. Set `enable_dns=false`, review the plan, and apply. This removes Route 53 application records and health checks.
-2. Set `enable_aws=false`, review the plan, and apply. This removes AWS resources managed by this state.
+Follow [`AWS_TEARDOWN_GUIDE.md`](AWS_TEARDOWN_GUIDE.md). It covers the complete feature-flag plan, manual review, Secrets Manager cleanup, verification commands, optional hosted-zone deletion, IAM cleanup, and recovery precautions.
 
 Keep `enable_databases=false` unless a managed database is intentionally required.
-
-Why: removing dependent DNS first avoids validation failures and dangling records. Review S3 contents before destruction because non-empty/versioned buckets can require deliberate cleanup.
 
 ## 18. Common failures
 
