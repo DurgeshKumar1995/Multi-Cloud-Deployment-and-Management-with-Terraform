@@ -64,11 +64,11 @@ make local-terraform
 
 ## Real-cloud deployment
 
-1. Complete [cloud account and HCP setup](docs/SETUP.md).
+1. Complete the [end-to-end GitHub, HCP Terraform, and AWS guide](docs/COMPLETE_AWS_SETUP_GUIDE.md), or use the shorter [cloud account setup](docs/SETUP.md).
 2. Publish the container image with the GitHub Actions workflow.
 3. Add an Azure SSH public key as an HCP Terraform variable.
 4. Enable one cloud at a time and review each plan.
-5. Enable DNS only after at least two provider endpoints return HTTP 200 from `/health`.
+5. Enable DNS after at least one provider endpoint returns HTTP 200; two or more providers enable failover.
 6. Enable databases only if the project demonstration truly requires them.
 
 Follow the complete [run and verification guide](docs/RUN_AND_VERIFY.md). Also see [architecture](docs/ARCHITECTURE.md), [failover testing](docs/FAILOVER_TEST.md), and [troubleshooting](docs/TROUBLESHOOTING.md).

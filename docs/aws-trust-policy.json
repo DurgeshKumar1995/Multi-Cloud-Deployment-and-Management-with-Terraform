@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "HcpTerraformOidc",
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::075472845204:oidc-provider/app.terraform.io"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "app.terraform.io:aud": "aws.workload.identity"
+        },
+        "StringLike": {
+          "app.terraform.io:sub": "organization:Multi-Cloud-Deployment-and-Management:project:Multi-Cloud Deployment-Management:workspace:Multi-Cloud-Deployment_Management_Terraform:run_phase:*"
+        }
+      }
+    }
+  ]
+}

@@ -102,7 +102,7 @@ The enterprise application already needs Contributor on `rg-multicloud-terraform
 4. Validate `http://app.multicloud.durgesh.space/health`.
 5. Deploy and verify Azure or GCP when DNS failover is required; applying again adds each enabled provider to the weighted record set.
 
-Create a **public Route 53 hosted zone named exactly `multicloud.durgesh.space`**. Do not reuse a hosted zone named `durgesh.space`: a delegated child zone must have its own SOA and NS records. Copy the new child zone ID into the HCP Terraform variable `hosted_zone_id`, replace `REPLACE_WITH_CHILD_HOSTED_ZONE_ID` in `docs/aws-deployment-policy.json`, and update the policy attached to the AWS deployment role.
+Create a **public Route 53 hosted zone named exactly `multicloud.durgesh.space`**. Do not reuse a hosted zone named `durgesh.space`: a delegated child zone must have its own SOA and NS records. Copy the child zone ID into the HCP Terraform variable `hosted_zone_id` and ensure the hosted-zone ARN in `docs/aws-deployment-policy.json` contains the same ID before attaching or updating the AWS deployment policy.
 
 In Namecheap Advanced DNS, replace the four `multicloud` NS records with the four name servers assigned to this new child zone. Do not replace the parent `durgesh.space` nameservers unless the whole domain is intentionally moving to Route 53.
 
