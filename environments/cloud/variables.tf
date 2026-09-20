@@ -50,10 +50,43 @@ variable "enable_databases" {
   default     = false
 }
 
+variable "enable_aws_mongodb" {
+  description = "Configure AWS application instances to retrieve a MongoDB Atlas URI from AWS Secrets Manager."
+  type        = bool
+  default     = false
+
+  validation {
+    condition     = !var.enable_aws_mongodb || var.enable_aws
+    error_message = "enable_aws_mongodb requires enable_aws to be true."
+  }
+}
+
+variable "aws_mongodb_secret_arn" {
+  description = "ARN of a pre-created AWS Secrets Manager secret containing the MongoDB URI as plain SecretString. The secret value is intentionally not managed by Terraform."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = !var.enable_aws_mongodb || can(regex("^arn:aws[a-z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$", var.aws_mongodb_secret_arn))
+    error_message = "Set aws_mongodb_secret_arn to a valid Secrets Manager secret ARN before enabling AWS MongoDB."
+  }
+}
+
+variable "mongodb_database" {
+  description = "MongoDB database used by the demo application."
+  type        = string
+  default     = "multicloud_demo"
+
+  validation {
+    condition     = can(regex("^[A-Za-z0-9_-]+$", var.mongodb_database))
+    error_message = "mongodb_database may contain only letters, numbers, underscores, and hyphens."
+  }
+}
+
 variable "container_image" {
   description = "Public OCI image deployed to all cloud VMs. Publish it before enabling cloud resources."
   type        = string
-  default     = "ghcr.io/durgeshkumar1995/multicloud-demo:v1.0.0"
+  default     = "ghcr.io/durgeshkumar1995/multicloud-demo:v1.1.0"
 }
 
 variable "container_port" {

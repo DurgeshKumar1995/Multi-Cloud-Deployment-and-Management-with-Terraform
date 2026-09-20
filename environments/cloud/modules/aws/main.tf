@@ -35,6 +35,52 @@ locals {
   }
 }
 
+resource "aws_iam_role" "application" {
+  count = var.enable_mongodb ? 1 : 0
+
+  name = "${local.name}-application"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+
+  tags = local.tags
+}
+
+resource "aws_iam_role_policy" "mongodb_secret" {
+  count = var.enable_mongodb ? 1 : 0
+
+  name = "mongodb-secret-read"
+  role = aws_iam_role.application[0].id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid    = "ReadMongoDbUri"
+      Effect = "Allow"
+      Action = [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+      ]
+      Resource = var.mongodb_secret_arn
+    }]
+  })
+}
+
+resource "aws_iam_instance_profile" "application" {
+  count = var.enable_mongodb ? 1 : 0
+
+  name = "${local.name}-application"
+  role = aws_iam_role.application[0].name
+
+  tags = local.tags
+}
+
 resource "aws_vpc" "main" {
   cidr_block           = "10.10.0.0/16"
   enable_dns_support   = true
@@ -139,11 +185,15 @@ resource "aws_instance" "application" {
   subnet_id                   = aws_subnet.public[count.index].id
   vpc_security_group_ids      = [aws_security_group.application.id]
   associate_public_ip_address = true
+  iam_instance_profile        = var.enable_mongodb ? aws_iam_instance_profile.application[0].name : null
   user_data_replace_on_change = true
   user_data = templatefile("${path.module}/cloud-init.sh.tftpl", {
-    container_image = var.container_image
-    container_port  = var.container_port
-    region          = var.region
+    container_image    = var.container_image
+    container_port     = var.container_port
+    region             = var.region
+    mongodb_enabled    = var.enable_mongodb
+    mongodb_secret_arn = var.mongodb_secret_arn
+    mongodb_database   = var.mongodb_database
   })
 
   metadata_options {
@@ -158,6 +208,16 @@ resource "aws_instance" "application" {
   }
 
   tags = merge(local.tags, { Name = "${local.name}-app-${count.index + 1}" })
+}
+
+resource "aws_eip" "application" {
+  count = var.enable_mongodb ? 2 : 0
+
+  domain   = "vpc"
+  instance = aws_instance.application[count.index].id
+
+  depends_on = [aws_internet_gateway.main]
+  tags       = merge(local.tags, { Name = "${local.name}-app-${count.index + 1}" })
 }
 
 resource "aws_lb" "application" {

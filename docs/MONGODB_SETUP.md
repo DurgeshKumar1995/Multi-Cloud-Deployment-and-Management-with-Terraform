@@ -142,15 +142,59 @@ Common causes are a missing IP access-list entry, incorrect database-user passwo
 
 Do not place `MONGODB_URI` directly in Terraform variables, EC2 user data, GitHub Actions variables, or the container image. Those locations can expose it through Terraform state, plans, instance metadata, logs, or image history.
 
-For the deployed AWS application, use this design:
+The AWS module implements this design:
 
 1. Store `MONGODB_URI` as a secret in AWS Secrets Manager.
 2. Attach an EC2 instance role granting only `secretsmanager:GetSecretValue` for that one secret ARN.
 3. Fetch the value during instance startup and pass it directly to the container environment.
-4. Add the two EC2 egress IPs to the Atlas IP access list for a test, or use a stable NAT gateway/private endpoint for durable production connectivity.
+4. Terraform assigns two stable Elastic IPs; add both `/32` addresses to the Atlas IP access list.
 5. Rotate the Atlas database-user password and secret regularly.
 
-This repository does not inject Atlas credentials into the live AWS deployment yet. Local MongoDB/Atlas testing is implemented first so no secret enters Terraform state. Add the Secrets Manager/instance-role path as a separate reviewed infrastructure change.
+### Deploy MongoDB Atlas integration to AWS
+
+The secret must contain the MongoDB URI as its complete plain `SecretString`, not JSON. Create or update it outside Terraform so its value never enters Terraform state:
+
+```bash
+aws secretsmanager create-secret \
+  --region AWS_REGION \
+  --name multicloud/demo/mongodb-uri \
+  --secret-string file:///secure/path/containing-only-the-uri
+```
+
+If it already exists, use `aws secretsmanager put-secret-value` with the same `file://` input. Never place the URI directly on a shared command line.
+
+Add these non-sensitive Terraform variables to the HCP Terraform workspace:
+
+```text
+enable_aws_mongodb      = true
+aws_mongodb_secret_arn = arn:aws:secretsmanager:AWS_REGION:AWS_ACCOUNT_ID:secret:multicloud/demo/mongodb-uri-SUFFIX
+mongodb_database        = multicloud_demo
+container_image         = ghcr.io/GITHUB_OWNER/multicloud-demo:v1.1.0
+```
+
+Keep `enable_databases = false`; it controls PostgreSQL rather than MongoDB.
+
+Before applying, add the IAM statements in `docs/aws-deployment-policy.json` to the HCP Terraform AWS deployment role. They allow Terraform to manage only project-prefixed EC2 roles and instance profiles.
+
+Apply the HCP Terraform plan. The AWS instances are replaced because their startup configuration and instance profile change. After apply, obtain the stable egress addresses:
+
+```bash
+terraform -chdir=environments/cloud output -json aws_application_public_ips
+```
+
+In Atlas, open **Security -> Network Access -> Add IP Address** and add each address as `/32`. Then verify:
+
+```bash
+curl -fsS http://aws.example.com/health
+curl -fsS http://aws.example.com/db/health
+curl -fsS \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"MongoDB Atlas test from AWS"}' \
+  http://aws.example.com/db/items
+curl -fsS http://aws.example.com/db/items
+```
+
+`/health` remains independent of MongoDB so the load balancer does not remove an otherwise healthy application instance while Atlas network access is being configured.
 
 ## Credential handling
 

@@ -38,3 +38,15 @@ variable "alert_email" {
 variable "enable_database" {
   type = bool
 }
+
+variable "enable_mongodb" {
+  type = bool
+}
+
+variable "mongodb_secret_arn" {
+  type = string
+}
+
+variable "mongodb_database" {
+  type = string
+}

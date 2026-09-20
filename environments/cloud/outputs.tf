@@ -18,6 +18,11 @@ output "global_endpoint" {
   value       = var.enable_dns ? "http://${var.application_hostname}" : null
 }
 
+output "aws_application_public_ips" {
+  description = "AWS application egress IPs for the MongoDB Atlas IP access list."
+  value       = try(module.aws[0].application_public_ips, [])
+}
+
 output "deployment_safety" {
   description = "Summary of cost-bearing deployment switches."
   value = {
@@ -28,4 +33,3 @@ output "deployment_safety" {
     databases = var.enable_databases
   }
 }
-

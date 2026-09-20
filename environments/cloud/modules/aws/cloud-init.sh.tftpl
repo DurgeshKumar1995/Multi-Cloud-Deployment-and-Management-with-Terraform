@@ -3,11 +3,44 @@ set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y docker.io curl
+apt-get install -y docker.io curl awscli
 systemctl enable --now docker
 
 docker pull '${container_image}'
 docker rm -f multicloud-demo 2>/dev/null || true
+
+mongodb_args=()
+%{ if mongodb_enabled ~}
+mongodb_secret_file='/run/multicloud-mongodb-uri'
+mongodb_env_file='/run/multicloud-mongodb.env'
+
+for attempt in $(seq 1 12); do
+  if aws secretsmanager get-secret-value \
+    --region '${region}' \
+    --secret-id '${mongodb_secret_arn}' \
+    --query SecretString \
+    --output text > "$mongodb_secret_file"; then
+    break
+  fi
+  if [ "$attempt" -eq 12 ]; then
+    echo 'Unable to retrieve the MongoDB URI from AWS Secrets Manager.' >&2
+    exit 1
+  fi
+  sleep 10
+done
+
+mongodb_uri=$(tr -d '\r\n' < "$mongodb_secret_file")
+if [[ "$mongodb_uri" != mongodb+srv://* && "$mongodb_uri" != mongodb://* ]]; then
+  echo 'The MongoDB secret does not contain a valid MongoDB URI.' >&2
+  exit 1
+fi
+
+umask 077
+printf 'MONGODB_URI=%s\nMONGODB_DATABASE=%s\n' \
+  "$mongodb_uri" '${mongodb_database}' > "$mongodb_env_file"
+mongodb_args=(--env-file "$mongodb_env_file")
+%{ endif ~}
+
 docker run -d \
   --name multicloud-demo \
   --restart unless-stopped \
@@ -15,5 +48,9 @@ docker run -d \
   -e PORT='${container_port}' \
   -e CLOUD_PROVIDER='aws' \
   -e CLOUD_REGION='${region}' \
+  "$${mongodb_args[@]}" \
   '${container_image}'
 
+%{ if mongodb_enabled ~}
+rm -f "$mongodb_secret_file" "$mongodb_env_file"
+%{ endif ~}

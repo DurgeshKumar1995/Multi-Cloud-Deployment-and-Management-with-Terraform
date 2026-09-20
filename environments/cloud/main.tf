@@ -10,16 +10,19 @@ module "aws" {
   count  = var.enable_aws ? 1 : 0
   source = "./modules/aws"
 
-  name_prefix       = var.name_prefix
-  environment       = var.environment
-  region            = var.aws_region
-  ami_id            = var.aws_ami_id
-  instance_type     = var.aws_instance_type
-  container_image   = var.container_image
-  container_port    = var.container_port
-  health_check_path = var.health_check_path
-  alert_email       = var.alert_email
-  enable_database   = var.enable_databases
+  name_prefix        = var.name_prefix
+  environment        = var.environment
+  region             = var.aws_region
+  ami_id             = var.aws_ami_id
+  instance_type      = var.aws_instance_type
+  container_image    = var.container_image
+  container_port     = var.container_port
+  health_check_path  = var.health_check_path
+  alert_email        = var.alert_email
+  enable_database    = var.enable_databases
+  enable_mongodb     = var.enable_aws_mongodb
+  mongodb_secret_arn = var.aws_mongodb_secret_arn
+  mongodb_database   = var.mongodb_database
 }
 
 module "azure" {
@@ -58,4 +61,3 @@ module "gcp" {
   database_admin_username = var.database_admin_username
   database_admin_password = var.database_admin_password
 }
-
