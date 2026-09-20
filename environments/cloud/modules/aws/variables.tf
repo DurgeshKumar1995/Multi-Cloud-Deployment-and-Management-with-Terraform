@@ -11,7 +11,8 @@ variable "region" {
 }
 
 variable "ami_id" {
-  type = string
+  description = "Optional pinned Ubuntu AMI. Empty selects the latest official Canonical Ubuntu 24.04 AMD64 GP3 image."
+  type        = string
 }
 
 variable "instance_type" {
@@ -37,4 +38,3 @@ variable "alert_email" {
 variable "enable_database" {
   type = bool
 }
-

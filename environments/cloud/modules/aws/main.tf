@@ -2,6 +2,30 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+# Resolve an official Canonical Ubuntu image when an explicit AMI is not pinned.
+# The cloud-init script below uses apt, so silently accepting an arbitrary AMI
+# can leave the load-balancer targets permanently unhealthy.
+data "aws_ami" "ubuntu" {
+  count       = var.ami_id == "" ? 1 : 0
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 locals {
   name = "${var.name_prefix}-${var.environment}"
   tags = {
@@ -110,7 +134,7 @@ resource "aws_security_group" "application" {
 resource "aws_instance" "application" {
   count = 2
 
-  ami                         = var.ami_id
+  ami                         = var.ami_id != "" ? var.ami_id : data.aws_ami.ubuntu[0].id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public[count.index].id
   vpc_security_group_ids      = [aws_security_group.application.id]
@@ -302,4 +326,3 @@ resource "aws_db_instance" "database" {
   apply_immediately           = true
   tags                        = local.tags
 }
-

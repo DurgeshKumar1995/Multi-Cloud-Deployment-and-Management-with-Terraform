@@ -6,7 +6,8 @@ container_port       = 8080
 health_check_path    = "/health"
 
 aws_region           = "ap-south-1"
-aws_ami_id           = "ami-08188a5a4dfdbd573"
+# Leave empty to resolve the latest official Canonical Ubuntu 24.04 image.
+aws_ami_id           = ""
 azure_location       = "centralindia"
 azure_resource_group_name = "rg-multicloud-terraform"
 gcp_project_id       = "multicloudproject-508411"

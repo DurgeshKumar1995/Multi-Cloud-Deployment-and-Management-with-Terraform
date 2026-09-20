@@ -86,13 +86,13 @@ variable "aws_region" {
 }
 
 variable "aws_ami_id" {
-  description = "Ubuntu-compatible AMI used for AWS instances."
+  description = "Optional pinned Ubuntu AMI. Empty selects the latest official Canonical Ubuntu 24.04 AMD64 GP3 image."
   type        = string
-  default     = "ami-08188a5a4dfdbd573"
+  default     = ""
 
   validation {
-    condition     = can(regex("^ami-[0-9a-f]+$", var.aws_ami_id))
-    error_message = "aws_ami_id must be a valid AMI identifier."
+    condition     = var.aws_ami_id == "" || can(regex("^ami-[0-9a-f]+$", var.aws_ami_id))
+    error_message = "aws_ami_id must be empty or a valid AMI identifier."
   }
 }
 
@@ -189,4 +189,3 @@ variable "database_admin_password" {
     error_message = "Set a database_admin_password of at least 16 characters before enabling databases."
   }
 }
-
