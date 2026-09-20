@@ -1,4 +1,7 @@
-.PHONY: test fmt compose-check local-up local-down local-terraform
+.PHONY: deps test fmt compose-check local-up local-down local-terraform
+
+deps:
+	python3 -m pip install -r requirements.txt
 
 test:
 	python3 -m unittest discover -s app/tests -v

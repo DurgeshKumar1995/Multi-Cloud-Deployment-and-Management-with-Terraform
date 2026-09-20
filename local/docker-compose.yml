@@ -1,6 +1,22 @@
 name: multicloud-local
 
 services:
+  mongodb:
+    image: mongo:8.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: multicloud
+      MONGO_INITDB_ROOT_PASSWORD: local-only-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--username", "multicloud", "--password", "local-only-mongodb", "--authenticationDatabase", "admin", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
   floci-aws:
     image: ${FLOCI_AWS_IMAGE:-floci/floci:latest}
     ports:
@@ -26,6 +42,11 @@ services:
     environment:
       CLOUD_PROVIDER: aws
       CLOUD_REGION: ap-south-1
+      MONGODB_URI: ${MONGODB_URI:-mongodb://multicloud:local-only-mongodb@mongodb:27017/?authSource=admin}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-multicloud_demo}
+    depends_on:
+      mongodb:
+        condition: service_healthy
     ports:
       - "8081:8080"
 
@@ -37,6 +58,11 @@ services:
     environment:
       CLOUD_PROVIDER: azure
       CLOUD_REGION: centralindia
+      MONGODB_URI: ${MONGODB_URI:-mongodb://multicloud:local-only-mongodb@mongodb:27017/?authSource=admin}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-multicloud_demo}
+    depends_on:
+      mongodb:
+        condition: service_healthy
     ports:
       - "8082:8080"
 
@@ -48,6 +74,11 @@ services:
     environment:
       CLOUD_PROVIDER: gcp
       CLOUD_REGION: asia-south1
+      MONGODB_URI: ${MONGODB_URI:-mongodb://multicloud:local-only-mongodb@mongodb:27017/?authSource=admin}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-multicloud_demo}
+    depends_on:
+      mongodb:
+        condition: service_healthy
     ports:
       - "8083:8080"
 
@@ -87,6 +118,7 @@ services:
       - grafana-data:/var/lib/grafana
 
 volumes:
+  mongodb-data:
   floci-aws-data:
   prometheus-data:
   grafana-data:

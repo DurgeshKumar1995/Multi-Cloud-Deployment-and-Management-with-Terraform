@@ -1,6 +1,6 @@
 # Multi-Cloud Deployment and Management with Terraform
 
-This repository implements the project brief as a safe, staged reference deployment across AWS, Azure, and Google Cloud. It includes a small containerized health service, cloud-specific infrastructure modules, Route 53 health-checked DNS failover, monitoring, storage, optional managed PostgreSQL, HCP Terraform remote runs, and a no-cloud local environment using Docker and Floci.
+This repository implements the project brief as a safe, staged reference deployment across AWS, Azure, and Google Cloud. It includes a small containerized health service, cloud-specific infrastructure modules, Route 53 health-checked DNS failover, monitoring, storage, optional MongoDB application integration, optional managed PostgreSQL infrastructure, HCP Terraform remote runs, and a no-cloud local environment using Docker and Floci.
 
 ## Safety first
 
@@ -37,6 +37,7 @@ The demo application listens on port `8080`; `/health` is the load-balancer and 
 Docker Desktop must be running.
 
 ```bash
+make deps
 make local-up
 curl http://localhost:8080/health
 open http://localhost:3000
@@ -50,6 +51,7 @@ Local endpoints:
 | AWS-labelled app | `http://localhost:8081` |
 | Azure-labelled app | `http://localhost:8082` |
 | GCP-labelled app | `http://localhost:8083` |
+| Local MongoDB | `mongodb://localhost:27017` (authenticated; use through the app) |
 | Prometheus | `http://localhost:9090` |
 | Grafana | `http://localhost:3000` (`admin` / `local-only-change-me`) |
 | Floci AWS | `http://localhost:14566` (container port `4566`) |
@@ -62,6 +64,16 @@ Run the local Terraform smoke test after the Floci AWS endpoint is listening:
 make local-terraform
 ```
 
+Verify MongoDB and write/read test data:
+
+```bash
+curl -fsS http://localhost:8081/db/health
+curl -fsS -H 'Content-Type: application/json' -d '{"message":"test"}' http://localhost:8081/db/items
+curl -fsS http://localhost:8082/db/items
+```
+
+For Atlas setup and secure credential handling, follow the [MongoDB test guide](docs/MONGODB_SETUP.md).
+
 ## Real-cloud deployment
 
 1. Complete the [end-to-end GitHub, HCP Terraform, and AWS guide](docs/COMPLETE_AWS_SETUP_GUIDE.md), or use the shorter [cloud account setup](docs/SETUP.md).
@@ -71,7 +83,7 @@ make local-terraform
 5. Enable DNS after at least one provider endpoint returns HTTP 200; two or more providers enable failover.
 6. Enable databases only if the project demonstration truly requires them.
 
-Follow the complete [run and verification guide](docs/RUN_AND_VERIFY.md). Also see [architecture](docs/ARCHITECTURE.md), [failover testing](docs/FAILOVER_TEST.md), and [troubleshooting](docs/TROUBLESHOOTING.md).
+Follow the complete [run and verification guide](docs/RUN_AND_VERIFY.md). Also see [MongoDB setup](docs/MONGODB_SETUP.md), [architecture](docs/ARCHITECTURE.md), [failover testing](docs/FAILOVER_TEST.md), and [troubleshooting](docs/TROUBLESHOOTING.md).
 
 ## Common commands
 

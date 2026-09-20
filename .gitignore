@@ -1,4 +1,6 @@
 .DS_Store
+__pycache__/
+*.py[cod]
 .terraform/
 **/.terraform/*
 *.tfstate
@@ -14,11 +16,11 @@ override.tf.json
 terraform.rc
 *.auto.tfvars
 !*.auto.tfvars.example
-.env
+*.env
+!*.env.example
 *.pem
 *.key
 credentials*.json
 service-account*.json
 local/floci-data/
 tmp/
-

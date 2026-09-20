@@ -7,9 +7,11 @@ ENV APP_VERSION=${APP_VERSION} \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
+COPY requirements.txt /app/requirements.txt
 COPY app/server.py /app/server.py
 
-RUN addgroup -S app && adduser -S -G app -u 10001 app \
+RUN pip install --no-cache-dir -r /app/requirements.txt \
+    && addgroup -S app && adduser -S -G app -u 10001 app \
     && chown -R app:app /app
 
 USER app
@@ -19,4 +21,3 @@ HEALTHCHECK --interval=15s --timeout=3s --start-period=5s --retries=3 \
   CMD wget -q -O - http://127.0.0.1:8080/health >/dev/null || exit 1
 
 CMD ["python", "/app/server.py"]
-
