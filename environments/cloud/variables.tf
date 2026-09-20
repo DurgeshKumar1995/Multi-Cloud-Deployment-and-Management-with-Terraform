@@ -34,13 +34,13 @@ variable "enable_gcp" {
 }
 
 variable "enable_dns" {
-  description = "Create public Route 53 records and health checks. Enable only after at least two clouds are healthy."
+  description = "Create public Route 53 provider/application records and health checks. One cloud publishes the application; two or more provide DNS failover."
   type        = bool
   default     = false
 
   validation {
-    condition     = !var.enable_dns || length(compact([var.enable_aws ? "aws" : "", var.enable_azure ? "azure" : "", var.enable_gcp ? "gcp" : ""])) >= 2
-    error_message = "enable_dns requires at least two enabled cloud providers."
+    condition     = !var.enable_dns || length(compact([var.enable_aws ? "aws" : "", var.enable_azure ? "azure" : "", var.enable_gcp ? "gcp" : ""])) >= 1
+    error_message = "enable_dns requires at least one enabled cloud provider."
   }
 }
 

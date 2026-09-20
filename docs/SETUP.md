@@ -97,11 +97,10 @@ The enterprise application already needs Contributor on `rg-multicloud-terraform
 ## Safe deployment sequence
 
 1. Set `enable_aws=true`; queue and review a plan, then apply.
-2. Verify the AWS output and `/health`; then repeat for Azure.
-3. Repeat for GCP.
-4. Confirm `aws.`, `azure.`, and `gcp.` provider hostnames are healthy.
-5. Set `enable_dns=true` and apply.
-6. Validate `http://app.multicloud.durgesh.space/health`.
+2. Verify the AWS output and `/health`.
+3. Set `enable_dns=true` to publish the AWS provider and application hostnames.
+4. Validate `http://app.multicloud.durgesh.space/health`.
+5. Deploy and verify Azure or GCP when DNS failover is required; applying again adds each enabled provider to the weighted record set.
 
 Create a **public Route 53 hosted zone named exactly `multicloud.durgesh.space`**. Do not reuse a hosted zone named `durgesh.space`: a delegated child zone must have its own SOA and NS records. Copy the new child zone ID into the HCP Terraform variable `hosted_zone_id`, replace `REPLACE_WITH_CHILD_HOSTED_ZONE_ID` in `docs/aws-deployment-policy.json`, and update the policy attached to the AWS deployment role.
 

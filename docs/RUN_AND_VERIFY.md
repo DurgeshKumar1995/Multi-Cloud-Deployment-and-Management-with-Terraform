@@ -291,9 +291,9 @@ curl -fsS http://GCP_ENDPOINT/health
 
 Expected: HTTP 200 with `"cloud": "gcp"` and region `asia-south1`.
 
-## 13. Enable and verify global DNS
+## 13. Enable and verify public DNS
 
-Enable DNS only after at least two provider `/health` endpoints return HTTP 200 and the Namecheap `multicloud` NS delegation points to the Route 53 name servers.
+Enable DNS after at least one provider `/health` endpoint returns HTTP 200 and the Namecheap `multicloud` NS delegation points to the Route 53 name servers. One enabled provider publishes a working application hostname; two or more healthy providers enable DNS failover.
 
 Set:
 
